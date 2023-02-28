@@ -6,7 +6,7 @@ import (
 
 type HttpIntegration interface {
 	Url(url string) HttpIntegration
-	Exec() ([]byte, error)
+	Exec() HttpClientResponse
 	Authorization(authorization Authorization) HttpIntegration
 	ContentType(contentType ContentType) HttpIntegration
 	Accept(accept ContentType) HttpIntegration

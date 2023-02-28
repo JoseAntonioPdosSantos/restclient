@@ -2,7 +2,6 @@ package restclient
 
 import (
 	"bytes"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -64,14 +63,14 @@ func (h HTTPClient) Interceptor(interceptor http.RoundTripper) HttpIntegration {
 	return h
 }
 
-func (h HTTPClient) Exec() (body []byte, err error) {
+func (h HTTPClient) Exec() HttpClientResponse {
 	h.addParams()
 
 	url := h.url + h.getRawQuery()
 
 	req, err := http.NewRequest(string(h.httpMethod), url, bytes.NewBuffer(h.body))
 	if err != nil {
-		return nil, err
+		return NewHttpRestClientResponse(nil, err)
 	}
 
 	h.addHeaders(req)
@@ -83,21 +82,22 @@ func (h HTTPClient) Exec() (body []byte, err error) {
 
 	res, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return NewHttpRestClientResponse(nil, err)
 	}
-
-	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return nil, err
-	}
-
-	defer res.Body.Close()
-
-	body, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return body, nil
+	return NewHttpRestClientResponse(res, err)
+	//
+	//if res.StatusCode < 200 || res.StatusCode >= 300 {
+	//	return nil, err
+	//}
+	//
+	//defer res.Body.Close()
+	//
+	//body, err = ioutil.ReadAll(res.Body)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//return body, nil
 }
 
 func (h *HTTPClient) addParams() {
