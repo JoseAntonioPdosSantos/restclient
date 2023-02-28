@@ -29,6 +29,16 @@ func (h HTTPClient) Authorization(authorization Authorization) HttpIntegration {
 	return h
 }
 
+func (h HTTPClient) ContentType(contentType ContentType) HttpIntegration {
+	h.header[ContentTypeDescription] = string(contentType)
+	return h
+}
+
+func (h HTTPClient) Accept(accept ContentType) HttpIntegration {
+	h.header[AcceptDescription] = string(accept)
+	return h
+}
+
 func (h HTTPClient) AddHeader(key string, value string) HttpIntegration {
 	h.header[key] = value
 	return h

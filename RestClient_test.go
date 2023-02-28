@@ -9,8 +9,8 @@ func TestRestClientGet(t *testing.T) {
 	httpClient := NewRestClient()
 	_, err := httpClient.Delete().
 		Url("https://api.pagar.me/core/v5/customers/customer_id/cards/card_id").
-		AddHeader("accept", "application/json").
-		AddHeader("content-type", "application/json").
+		ContentType(ApplicationJson).
+		Accept(ApplicationJson).
 		Authorization(authorization).
 		Exec()
 
