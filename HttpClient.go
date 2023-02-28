@@ -85,19 +85,6 @@ func (h HTTPClient) Exec() HttpClientResponse {
 		return NewHttpRestClientResponse(nil, err)
 	}
 	return NewHttpRestClientResponse(res, err)
-	//
-	//if res.StatusCode < 200 || res.StatusCode >= 300 {
-	//	return nil, err
-	//}
-	//
-	//defer res.Body.Close()
-	//
-	//body, err = ioutil.ReadAll(res.Body)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//return body, nil
 }
 
 func (h *HTTPClient) addParams() {
