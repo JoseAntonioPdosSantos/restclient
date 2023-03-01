@@ -20,7 +20,7 @@ func (r RestClient) Delete() HttpIntegration {
 }
 
 func (r RestClient) newHTTPMethod(method HttpMethod) HttpIntegration {
-	return HTTPClient{
+	return HttpClient{
 		httpMethod:    method,
 		url:           "https://",
 		header:        make(map[string]string),
