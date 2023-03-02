@@ -7,12 +7,16 @@ func NewRestClient() HttpClientMethod {
 	return RestClient{}
 }
 
-func (r RestClient) Get() HttpIntegration {
-	return r.newHTTPMethod(Get)
-}
-
 func (r RestClient) Post() HttpIntegration {
 	return r.newHTTPMethod(Post)
+}
+
+func (r RestClient) Put() HttpIntegration {
+	return r.newHTTPMethod(Put)
+}
+
+func (r RestClient) Get() HttpIntegration {
+	return r.newHTTPMethod(Get)
 }
 
 func (r RestClient) Delete() HttpIntegration {

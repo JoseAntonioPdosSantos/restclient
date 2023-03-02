@@ -1,7 +1,8 @@
 package restclient
 
 type HttpClientMethod interface {
-	Get() HttpIntegration
 	Post() HttpIntegration
+	Put() HttpIntegration
+	Get() HttpIntegration
 	Delete() HttpIntegration
 }
