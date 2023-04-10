@@ -134,8 +134,6 @@ func (h hTTPSignatureBuilder) sign(message string, secret string) string {
 
 	hash_ := base64.StdEncoding.EncodeToString(hash)
 
-	fmt.Println(hash_)
-
 	return hash_
 }
 
