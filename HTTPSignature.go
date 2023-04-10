@@ -17,7 +17,6 @@ type HTTPSignature struct {
 
 type hTTPSignatureBuilder struct {
 	algorithm        string
-	payload          []byte
 	keyID            string
 	sharedSecretKey  string
 	merchantID       string
@@ -39,11 +38,6 @@ func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
 
 func (h hTTPSignatureBuilder) Algorithm(algorithm string) hTTPSignatureBuilder {
 	h.algorithm = algorithm
-	return h
-}
-
-func (h hTTPSignatureBuilder) Payload(payload []byte) hTTPSignatureBuilder {
-	h.payload = payload
 	return h
 }
 
@@ -91,8 +85,8 @@ func (h hTTPSignatureBuilder) RequestTarget(requestTarget string) hTTPSignatureB
 	return h
 }
 
-func (h hTTPSignatureBuilder) Digest() hTTPSignatureBuilder {
-	bodyReq := sha256.Sum256(h.payload)
+func (h hTTPSignatureBuilder) Digest(payload []byte) hTTPSignatureBuilder {
+	bodyReq := sha256.Sum256(payload)
 	h.digest = "SHA-256=" + base64.StdEncoding.EncodeToString(bodyReq[:])
 	h.headers["digest"] = h.digest
 	h.header = append(h.header, "digest")
