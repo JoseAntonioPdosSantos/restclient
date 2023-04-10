@@ -2,7 +2,6 @@ package restclient
 
 import (
 	"crypto/sha256"
-	"encoding/json"
 )
 
 type SHA256 struct {
@@ -21,6 +20,6 @@ func (s SHA256) Name() string {
 }
 
 func (s SHA256) Exec(payload interface{}) interface{} {
-	payload_, _ := json.Marshal(payload)
+	payload_, _ := payload.([]byte)
 	return sha256.Sum256(payload_)
 }
