@@ -14,3 +14,7 @@ func NewBearer(token string) Authorization {
 func (b Bearer) GetAuthorization() string {
 	return "Bearer " + b.token
 }
+
+func (b Bearer) GetHeaderKey() string {
+	return "Authorization"
+}

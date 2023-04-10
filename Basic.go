@@ -19,3 +19,7 @@ func NewBasic(username string, password string) Authorization {
 func (b Basic) GetAuthorization() string {
 	return "Basic " + base64.StdEncoding.EncodeToString([]byte(b.username+":"+b.password))
 }
+
+func (b Basic) GetHeaderKey() string {
+	return "Authorization"
+}
