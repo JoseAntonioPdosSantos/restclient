@@ -5,6 +5,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -16,8 +17,6 @@ type HTTPSignature struct {
 }
 
 type hTTPSignatureBuilder struct {
-	algorithmName    string
-	algorithmPrefix  string
 	keyID            string
 	sharedSecretKey  string
 	merchantID       string
@@ -27,7 +26,7 @@ type hTTPSignatureBuilder struct {
 	header           []string
 	canonicalHeaders *bytes.Buffer
 	signature        string
-	algorithmFn      func(payload []byte) [32]byte
+	algorithm        Algorithm
 }
 
 func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
@@ -38,18 +37,8 @@ func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
 	}
 }
 
-func (h hTTPSignatureBuilder) AlgorithmPrefix(algorithmPrefix string) hTTPSignatureBuilder {
-	h.algorithmPrefix = algorithmPrefix
-	return h
-}
-
-func (h hTTPSignatureBuilder) AlgorithmName(algorithmName string) hTTPSignatureBuilder {
-	h.algorithmName = algorithmName
-	return h
-}
-
-func (h hTTPSignatureBuilder) AlgorithmFn(fn func(payload []byte) [32]byte) hTTPSignatureBuilder {
-	h.algorithmFn = fn
+func (h hTTPSignatureBuilder) Algorithm(algorithm Algorithm) hTTPSignatureBuilder {
+	h.algorithm = algorithm
 	return h
 }
 
@@ -98,14 +87,14 @@ func (h hTTPSignatureBuilder) RequestTarget(requestTarget string) hTTPSignatureB
 }
 
 func (h hTTPSignatureBuilder) Digest(payload []byte) hTTPSignatureBuilder {
-	if h.algorithmFn == nil {
+	if h.algorithm == nil {
 		return h
 	}
-	if len(strings.TrimSpace(h.algorithmPrefix)) == 0 {
-		return h
-	}
-	bodyReq := h.algorithmFn(payload)
-	h.digest = fmt.Sprintf("%s=%s", h.algorithmPrefix, base64.StdEncoding.EncodeToString(bodyReq[:]))
+
+	x := NewSHA256().Exec(payload)
+	y, _ := json.Marshal(x)
+	bodyReq := y //h.algorithmFn(payload)
+	h.digest = fmt.Sprintf("%s=%s", h.algorithm.Prefix(), base64.StdEncoding.EncodeToString(bodyReq[:]))
 	h.headers["digest"] = h.digest
 	h.header = append(h.header, "digest")
 	fmt.Fprintf(h.canonicalHeaders, "%s: %s\n", "digest", h.digest)
@@ -120,15 +109,12 @@ func (h hTTPSignatureBuilder) VCMerchantID(vCMerchantID string) hTTPSignatureBui
 }
 
 func (h hTTPSignatureBuilder) Build() HTTPSignature {
-	if len(strings.TrimSpace(h.algorithmName)) == 0 {
-		return HTTPSignature{}
-	}
 	canonicalString := strings.TrimSuffix(h.canonicalHeaders.String(), "\n")
 	sign := h.sign(canonicalString, h.sharedSecretKey)
 
 	signature := fmt.Sprintf(`keyid="%s", algorithm="%s", headers="%s", signature="%s"`,
 		h.keyID,
-		h.algorithmName,
+		h.algorithm.Name(),
 		strings.Join(h.header, " "),
 		sign,
 	)
