@@ -16,7 +16,8 @@ type HTTPSignature struct {
 }
 
 type hTTPSignatureBuilder struct {
-	algorithm        string
+	algorithmName    string
+	algorithmPrefix  string
 	keyID            string
 	sharedSecretKey  string
 	merchantID       string
@@ -26,7 +27,7 @@ type hTTPSignatureBuilder struct {
 	header           []string
 	canonicalHeaders *bytes.Buffer
 	signature        string
-	fn               func(payload []byte) [32]byte
+	algorithmFn      func(payload []byte) [32]byte
 }
 
 func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
@@ -37,8 +38,18 @@ func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
 	}
 }
 
-func (h hTTPSignatureBuilder) Algorithm(fn func(payload []byte) [32]byte) hTTPSignatureBuilder {
-	h.fn = fn
+func (h hTTPSignatureBuilder) AlgorithmPrefix(algorithmPrefix string) hTTPSignatureBuilder {
+	h.algorithmPrefix = algorithmPrefix
+	return h
+}
+
+func (h hTTPSignatureBuilder) AlgorithmName(algorithmName string) hTTPSignatureBuilder {
+	h.algorithmName = algorithmName
+	return h
+}
+
+func (h hTTPSignatureBuilder) AlgorithmFn(fn func(payload []byte) [32]byte) hTTPSignatureBuilder {
+	h.algorithmFn = fn
 	return h
 }
 
@@ -87,9 +98,14 @@ func (h hTTPSignatureBuilder) RequestTarget(requestTarget string) hTTPSignatureB
 }
 
 func (h hTTPSignatureBuilder) Digest(payload []byte) hTTPSignatureBuilder {
-	bodyReq := h.fn(payload)
-	//bodyReq := sha256.Sum256(payload)
-	h.digest = "SHA-256=" + base64.StdEncoding.EncodeToString(bodyReq[:])
+	if h.algorithmFn == nil {
+		return h
+	}
+	if len(strings.TrimSpace(h.algorithmPrefix)) == 0 {
+		return h
+	}
+	bodyReq := h.algorithmFn(payload)
+	h.digest = fmt.Sprintf("%s=%s", h.algorithmPrefix, base64.StdEncoding.EncodeToString(bodyReq[:]))
 	h.headers["digest"] = h.digest
 	h.header = append(h.header, "digest")
 	fmt.Fprintf(h.canonicalHeaders, "%s: %s\n", "digest", h.digest)
@@ -104,12 +120,15 @@ func (h hTTPSignatureBuilder) VCMerchantID(vCMerchantID string) hTTPSignatureBui
 }
 
 func (h hTTPSignatureBuilder) Build() HTTPSignature {
+	if len(strings.TrimSpace(h.algorithmName)) == 0 {
+		return HTTPSignature{}
+	}
 	canonicalString := strings.TrimSuffix(h.canonicalHeaders.String(), "\n")
 	sign := h.sign(canonicalString, h.sharedSecretKey)
 
 	signature := fmt.Sprintf(`keyid="%s", algorithm="%s", headers="%s", signature="%s"`,
 		h.keyID,
-		h.algorithm,
+		h.algorithmName,
 		strings.Join(h.header, " "),
 		sign,
 	)
