@@ -99,7 +99,7 @@ func (h HttpClient) addHeaders(request *http.Request) {
 	}
 	if h.authorization != nil {
 		authorization := h.authorization.GetAuthorization()
-		request.Header.Add(h.authorization.GetAuthorization(), authorization)
+		request.Header.Add(h.authorization.GetHeaderKey(), authorization)
 	}
 }
 
