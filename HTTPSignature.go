@@ -26,7 +26,7 @@ type hTTPSignatureBuilder struct {
 	header           []string
 	canonicalHeaders *bytes.Buffer
 	signature        string
-	fn               func(payload []byte) []byte
+	fn               func(payload []byte) [32]byte
 }
 
 func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
@@ -37,7 +37,7 @@ func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
 	}
 }
 
-func (h hTTPSignatureBuilder) Algorithm(fn func(payload []byte) []byte) hTTPSignatureBuilder {
+func (h hTTPSignatureBuilder) Algorithm(fn func(payload []byte) [32]byte) hTTPSignatureBuilder {
 	h.fn = fn
 	return h
 }
