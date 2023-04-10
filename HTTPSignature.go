@@ -5,7 +5,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -92,8 +91,8 @@ func (h hTTPSignatureBuilder) Digest(payload []byte) hTTPSignatureBuilder {
 	}
 
 	x := NewSHA256().Exec(payload)
-	y, _ := json.Marshal(x)
-	bodyReq := y //h.algorithmFn(payload)
+
+	bodyReq := x.([]byte) //h.algorithmFn(payload)
 	h.digest = fmt.Sprintf("%s=%s", h.algorithm.Prefix(), base64.StdEncoding.EncodeToString(bodyReq[:]))
 	h.headers["digest"] = h.digest
 	h.header = append(h.header, "digest")
