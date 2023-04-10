@@ -26,6 +26,7 @@ type hTTPSignatureBuilder struct {
 	header           []string
 	canonicalHeaders *bytes.Buffer
 	signature        string
+	fn               func(payload []byte) []byte
 }
 
 func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
@@ -36,8 +37,8 @@ func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
 	}
 }
 
-func (h hTTPSignatureBuilder) Algorithm(algorithm string) hTTPSignatureBuilder {
-	h.algorithm = algorithm
+func (h hTTPSignatureBuilder) Algorithm(fn func(payload []byte) []byte) hTTPSignatureBuilder {
+	h.fn = fn
 	return h
 }
 
@@ -86,7 +87,8 @@ func (h hTTPSignatureBuilder) RequestTarget(requestTarget string) hTTPSignatureB
 }
 
 func (h hTTPSignatureBuilder) Digest(payload []byte) hTTPSignatureBuilder {
-	bodyReq := sha256.Sum256(payload)
+	bodyReq := h.fn(payload)
+	//bodyReq := sha256.Sum256(payload)
 	h.digest = "SHA-256=" + base64.StdEncoding.EncodeToString(bodyReq[:])
 	h.headers["digest"] = h.digest
 	h.header = append(h.header, "digest")
@@ -102,13 +104,6 @@ func (h hTTPSignatureBuilder) VCMerchantID(vCMerchantID string) hTTPSignatureBui
 }
 
 func (h hTTPSignatureBuilder) Build() HTTPSignature {
-	if len(strings.TrimSpace(h.sharedSecretKey)) == 0 {
-		return HTTPSignature{}
-	}
-	if h.canonicalHeaders.Len() == 0 {
-		return HTTPSignature{}
-	}
-
 	canonicalString := strings.TrimSuffix(h.canonicalHeaders.String(), "\n")
 	sign := h.sign(canonicalString, h.sharedSecretKey)
 
