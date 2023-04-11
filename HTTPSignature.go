@@ -89,10 +89,7 @@ func (h hTTPSignatureBuilder) Digest(payload []byte) hTTPSignatureBuilder {
 	if h.algorithm == nil {
 		return h
 	}
-
-	x := NewSHA256().Exec(payload)
-
-	bodyReq := x.([32]byte) //h.algorithmFn(payload)
+	bodyReq := h.algorithm.Exec(payload)
 	h.digest = fmt.Sprintf("%s=%s", h.algorithm.Prefix(), base64.StdEncoding.EncodeToString(bodyReq[:]))
 	h.headers["digest"] = h.digest
 	h.header = append(h.header, "digest")
