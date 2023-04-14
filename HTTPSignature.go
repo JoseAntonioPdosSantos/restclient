@@ -21,7 +21,6 @@ type hTTPSignatureBuilder struct {
 	merchantID       string
 	date             string
 	digest           string
-	headers          map[string]string
 	header           []string
 	canonicalHeaders *bytes.Buffer
 	signature        string
@@ -30,7 +29,6 @@ type hTTPSignatureBuilder struct {
 
 func NewHTTPSignatureBuilder() hTTPSignatureBuilder {
 	return hTTPSignatureBuilder{
-		headers:          make(map[string]string),
 		header:           make([]string, 0, 10),
 		canonicalHeaders: bytes.NewBuffer([]byte{}),
 	}
@@ -57,21 +55,18 @@ func (h hTTPSignatureBuilder) MerchantID(merchantID string) hTTPSignatureBuilder
 }
 
 func (h hTTPSignatureBuilder) AddHeader(key string, value string) hTTPSignatureBuilder {
-	h.headers[key] = value
 	h.header = append(h.header, key)
 	fmt.Fprintf(h.canonicalHeaders, "%s: %s\n", key, value)
 	return h
 }
 
 func (h hTTPSignatureBuilder) Host(host string) hTTPSignatureBuilder {
-	h.headers["host"] = host
 	h.header = append(h.header, "host")
 	fmt.Fprintf(h.canonicalHeaders, "%s: %s\n", "host", host)
 	return h
 }
 
 func (h hTTPSignatureBuilder) Date(date string) hTTPSignatureBuilder {
-	h.headers["date"] = date
 	h.header = append(h.header, "date")
 	h.date = date
 	fmt.Fprintf(h.canonicalHeaders, "%s: %s\n", "date", date)
@@ -79,7 +74,6 @@ func (h hTTPSignatureBuilder) Date(date string) hTTPSignatureBuilder {
 }
 
 func (h hTTPSignatureBuilder) RequestTarget(requestTarget string) hTTPSignatureBuilder {
-	h.headers["(request-target)"] = requestTarget
 	h.header = append(h.header, "(request-target)")
 	fmt.Fprintf(h.canonicalHeaders, "%s: %s\n", "(request-target)", requestTarget)
 	return h
@@ -91,14 +85,12 @@ func (h hTTPSignatureBuilder) Digest(payload []byte) hTTPSignatureBuilder {
 	}
 	bodyReq := h.algorithm.Exec(payload)
 	h.digest = fmt.Sprintf("%s=%s", h.algorithm.Prefix(), base64.StdEncoding.EncodeToString(bodyReq[:]))
-	h.headers["digest"] = h.digest
 	h.header = append(h.header, "digest")
 	fmt.Fprintf(h.canonicalHeaders, "%s: %s\n", "digest", h.digest)
 	return h
 }
 
 func (h hTTPSignatureBuilder) VCMerchantID(vCMerchantID string) hTTPSignatureBuilder {
-	h.headers["v-c-merchant-id"] = vCMerchantID
 	h.header = append(h.header, "v-c-merchant-id")
 	fmt.Fprintf(h.canonicalHeaders, "%s: %s\n", "v-c-merchant-id", vCMerchantID)
 	return h
