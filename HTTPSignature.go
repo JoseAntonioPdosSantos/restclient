@@ -2,8 +2,6 @@ package restclient
 
 import (
 	"bytes"
-	"crypto/hmac"
-	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
 	"strings"
@@ -116,13 +114,8 @@ func (h hTTPSignatureBuilder) Build() HTTPSignature {
 
 func (h hTTPSignatureBuilder) sign(message string, secret string) string {
 	decodedSecretKey, _ := base64.StdEncoding.DecodeString(secret)
-	secretKey := hmac.New(sha256.New, decodedSecretKey)
-	secretKey.Write([]byte(message))
-	hash := secretKey.Sum(nil)
-
-	hash_ := base64.StdEncoding.EncodeToString(hash)
-
-	return hash_
+	hash := h.algorithm.Sign([]byte(message), decodedSecretKey)
+	return base64.StdEncoding.EncodeToString(hash)
 }
 
 func (s HTTPSignature) GetAuthorization() string {

@@ -1,6 +1,7 @@
 package restclient
 
 import (
+	"crypto/hmac"
 	"crypto/sha256"
 )
 
@@ -21,4 +22,11 @@ func (s SHA256) Name() string {
 
 func (s SHA256) Exec(payload []byte) [32]byte {
 	return sha256.Sum256(payload)
+}
+
+func (s SHA256) Sign(doc []byte, secret []byte) []byte {
+	secretKey := hmac.New(sha256.New, secret)
+	secretKey.Write(doc)
+	hash := secretKey.Sum(nil)
+	return hash
 }
