@@ -1,24 +1,25 @@
 # Introduction 
-The restclient lib is an HTTP client, and has as purpose to make it easier making HTTP request. 
+The restclient library is an HTTP client designed to make HTTP requests easier.
 
 # Getting Started
-This lib has been implemented some HTTP request solution you can notice in these examples bellow.
+This library provides several HTTP request solutions, as demonstrated in the examples below.
 
-> If you don't find out what you're looking for, you can help us to implement your solution and send us your pull request or just
-let us know, maybe we can implement it for you. Take a look at the [Contribute Section](#Contribute).
+> If you can't find what you're looking for, you can help us implement the solution by sending 
+> a pull request or letting us know. We're open to implementing it for you. 
+> Take a look at the [Contribute Section](https://github.com/JoseAntonioPdosSantos/restclient/blob/master/Translation:contributing.md).
 
-Using the command bellow to import this lib into your golang project.
+To import this library into your Golang project, use the following command:
 ```cmd
 go get github.com/JoseAntonioPdosSantos/restclient
 ```
 
-### The solutions this lib implement are describes in these examples bellow:
+### The solutions implemented in this library are described in the examples below:
 
-Before trying to make a request you have to create an httpClient object first. As shown bellow:
+Before making a request, you need to create an httpClient object:
 ``` go
 httpClient := restclient.NewRestClient()
 ```
-And make a correct import of this lib
+Make sure to import the library correctly:
 ```go
 import (
 	"github.com/JoseAntonioPdosSantos/restclient"
@@ -52,7 +53,7 @@ fmt.Printf("data: %v", string(body))
 
 ```
 
-#### Using a basic authentication in your request
+#### Using basic authentication in your request
 
 ```go
 response := httpClient.Get().
@@ -62,7 +63,7 @@ response := httpClient.Get().
 ```
 
 
-#### Using an HTTP Signature authentication with SHA256 in your POST request
+#### Using HTTP Signature authentication with SHA256 in your POST request
 
 ```GO
 httpSignatureAuthorization := restclient.NewHTTPSignatureBuilder().
@@ -119,22 +120,3 @@ response := httpClient.Get().
 	Interceptor(your_Interceptor_Implemented_Here).
 	Exec()
 ```
-
-# Contribute
-We welcome contributions from other users and developers to improve our code. By contributing, you can help make the project even better. Here's how you can get involved:
-
-1. Fork the repository and clone it to your local machine.
-2. Make your desired changes and improvements to the codebase.
-3. Ensure that your changes adhere to the project's coding conventions and guidelines.
-4. Write tests to cover your changes and ensure they pass.
-5. Commit your changes and push them to your forked repository.
-6. Submit a pull request (PR) to our main repository, explaining the changes you made.
-7. We'll review your PR and provide feedback or suggestions if necessary. Once approved, your changes will be merged into the main codebase.
-
-Please note that by contributing to this project, you agree to follow our Code of Conduct, so please ensure you are familiar with it.
-
-If you have any questions or need assistance, feel free to reach out to us via joseantonio.dev@gmail.com.
-
-Thank you for your interest in contributing to our project! We appreciate your help in making our code better.
-
-Feel free to customize this section to fit your project's specific contribution guidelines and processes.
