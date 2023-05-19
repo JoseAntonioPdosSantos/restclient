@@ -25,7 +25,7 @@ import (
 )
 ```
 
-Making a simple HTTP request
+#### Making a simple HTTP request
 
 ```go
 response := httpClient.Get().
@@ -37,7 +37,7 @@ body, _ := response.GetBody()
 fmt.Printf("data: %v", string(body))
 
 ```
-Making a simple HTTP request with parameters
+#### Making a simple HTTP request with parameters
 
 ```go
 
@@ -52,7 +52,7 @@ fmt.Printf("data: %v", string(body))
 
 ```
 
-Using a basic authentication in your request
+#### Using a basic authentication in your request
 
 ```go
 response := httpClient.Get().
@@ -62,7 +62,7 @@ response := httpClient.Get().
 ```
 
 
-Using an HTTP Signature authentication with SHA256 in your POST request
+#### Using an HTTP Signature authentication with SHA256 in your POST request
 
 ```GO
 httpSignatureAuthorization := restclient.NewHTTPSignatureBuilder().
@@ -94,7 +94,7 @@ response := httpClient.Post().
 	
 ```
 
-Using other configurations in your request
+#### Using other configurations in your request
 
 ```go
 response := httpClient.Get().
