@@ -6,7 +6,7 @@ This library provides several HTTP request solutions, as demonstrated in the exa
 
 > If you can't find what you're looking for, you can help us implement the solution by sending 
 > a pull request or letting us know. We're open to implementing it for you. 
-> Take a look at the [Contribute Section](https://github.com/JoseAntonioPdosSantos/restclient/blob/master/Translation:contributing.md).
+> Take a look at the [Contribute Section](https://github.com/JoseAntonioPdosSantos/restclient/blob/master/contributing.md).
 
 To import this library into your Golang project, use the following command:
 ```cmd
