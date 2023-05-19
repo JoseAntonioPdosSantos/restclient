@@ -5,7 +5,7 @@ The restclient lib is an HTTP client, and has as purpose to make it easier makin
 This lib has been implemented some HTTP request solution you can notice in these examples bellow.
 
 > If you don't find out what you're looking for, you can help us to implement your solution and send us your pull request or just
-let us know, maybe we can implement it for you.
+let us know, maybe we can implement it for you. Take a look at the [Contribute Section](#Contribute).
 
 Using the command bellow to import this lib into your golang project.
 ```cmd
