@@ -53,6 +53,34 @@ fmt.Printf("data: %v", string(body))
 
 ```
 
+#### Using unmarshal of client in your request
+
+```go
+type ResponseBody struct {
+	Id                 int      `json:"id"`
+	Title              string   `json:"title"`
+	Description        string   `json:"description"`
+	Price              int      `json:"price"`
+	DiscountPercentage float64  `json:"discountPercentage"`
+	Rating             float64  `json:"rating"`
+	Stock              int      `json:"stock"`
+	Brand              string   `json:"brand"`
+	Category           string   `json:"category"`
+	Thumbnail          string   `json:"thumbnail"`
+	Images             []string `json:"images"`
+}
+
+response := httpClient.
+	Get("https://dummyjson.com/products/30").
+	Authorization(restclient.NewBasic("your username", "your password")).
+	Exec()
+
+responseBody := &ResponseBody{}
+err := response.Unmarshal(&responseBody)	
+
+fmt.Println(responseBody)
+```
+
 #### Using basic authentication in your request
 
 ```go
@@ -65,7 +93,7 @@ response := httpClient.Get().
 
 #### Using HTTP Signature authentication with SHA256 in your POST request
 
-```GO
+```go
 httpSignatureAuthorization := restclient.NewHTTPSignatureBuilder().
 	Algorithm(restclient.NewSHA256()).
 	KeyID("Your_Key_ID").
@@ -120,3 +148,34 @@ response := httpClient.Get().
 	Interceptor(your_Interceptor_Implemented_Here).
 	Exec()
 ```
+
+#### Using custom timeout configuration in your request
+
+ - With 10 seconds of timeout
+```go
+response := httpClient.
+	Get("https://your-rest-api-integration-herer").
+	Authorization(restclient.NewBasic("your username", "your password")).
+	Timeout(10).
+	Exec()
+```
+
+ - With 60 seconds of timeout
+```go
+response := httpClient.
+	Get("https://your-rest-api-integration-herer").
+	Authorization(restclient.NewBasic("your username", "your password")).
+	Timeout(60).
+	Exec()
+```
+
+ - With 5 minutes of timeout
+```go
+response := httpClient.
+	Get("https://your-rest-api-integration-herer").
+	Authorization(restclient.NewBasic("your username", "your password")).
+	Timeout(5).
+	TimeoutDuration(time.Minute).
+	Exec()
+```
+

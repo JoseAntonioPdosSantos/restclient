@@ -8,6 +8,7 @@ We welcome contributions from other users and developers to improve our code. By
 5. Commit your changes and push them to your forked repository.
 6. Submit a pull request (PR) to our main repository, explaining the changes you made.
 7. We'll review your PR and provide feedback or suggestions if necessary. Once approved, your changes will be merged into the main codebase.
+8. Cycling 40 km a day
 
 Please note that by contributing to this project, you agree to follow our Code of Conduct, so please ensure you are familiar with it.
 
