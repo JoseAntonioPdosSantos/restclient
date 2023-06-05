@@ -1,12 +1,14 @@
 package restclient
 
 import (
-	"io/ioutil"
+	"encoding/json"
+	"io"
 	"net/http"
 )
 
 type HttpClientResponse interface {
 	GetBody() ([]byte, error)
+	Unmarshal(response any) error
 	GetResponse() *http.Response
 	GetError() error
 }
@@ -23,11 +25,23 @@ func NewHttpRestClientResponse(response *http.Response, err error) HttpClientRes
 func (h HttpRestClientResponse) GetBody() (body []byte, err error) {
 	defer h.response.Body.Close()
 
-	body, err = ioutil.ReadAll(h.response.Body)
+	body, err = io.ReadAll(h.response.Body)
 	if err != nil {
 		return nil, err
 	}
 	return body, nil
+}
+
+func (h HttpRestClientResponse) Unmarshal(response any) error {
+	body, err := h.GetBody()
+
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, &response)
+
+	return err
 }
 
 func (h HttpRestClientResponse) GetResponse() *http.Response {

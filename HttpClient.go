@@ -8,18 +8,25 @@ import (
 )
 
 type HttpClient struct {
-	url           string
-	httpMethod    HttpMethod
-	header        map[string]string
-	params        map[string]string
-	queries       map[string]string
-	body          []byte
-	authorization Authorization
-	interceptor   http.RoundTripper
+	url             string
+	httpMethod      HttpMethod
+	header          map[string]string
+	params          map[string]string
+	queries         map[string]string
+	body            []byte
+	timeout         time.Duration
+	timeoutDuration time.Duration
+	authorization   Authorization
+	interceptor     http.RoundTripper
 }
 
 func (h HttpClient) Url(url string) HttpIntegration {
 	h.url = url
+	return h
+}
+
+func (h HttpClient) Host(host string) HttpIntegration {
+	h.url = host
 	return h
 }
 
@@ -58,6 +65,16 @@ func (h HttpClient) Body(body []byte) HttpIntegration {
 	return h
 }
 
+func (h HttpClient) Timeout(timeout time.Duration) HttpIntegration {
+	h.timeout = timeout
+	return h
+}
+
+func (h HttpClient) TimeoutDuration(timeoutDuration time.Duration) HttpIntegration {
+	h.timeoutDuration = timeoutDuration
+	return h
+}
+
 func (h HttpClient) Interceptor(interceptor http.RoundTripper) HttpIntegration {
 	h.interceptor = interceptor
 	return h
@@ -76,7 +93,7 @@ func (h HttpClient) Exec() HttpClientResponse {
 	h.addHeaders(req)
 
 	client := http.Client{
-		Timeout:   10 * time.Second,
+		Timeout:   h.getTimeout(),
 		Transport: h.interceptor,
 	}
 
@@ -85,6 +102,19 @@ func (h HttpClient) Exec() HttpClientResponse {
 		return NewHttpRestClientResponse(nil, err)
 	}
 	return NewHttpRestClientResponse(res, err)
+}
+
+func (h HttpClient) getTimeout() time.Duration {
+	if h.timeout > 0 {
+		if h.timeoutDuration > 0 {
+			return h.timeout * h.timeoutDuration
+		}
+		return h.timeout * time.Second
+	}
+	if h.timeoutDuration > 0 {
+		return 10 * h.timeoutDuration
+	}
+	return 10 * time.Second
 }
 
 func (h *HttpClient) addParams() {
