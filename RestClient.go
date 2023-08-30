@@ -35,5 +35,5 @@ func (r RestClient) newHTTPMethod(method HttpMethod, url []string) HttpIntegrati
 	if len(url) > 0 && url[0] != "" {
 		client.url = url[0]
 	}
-	return client
+	return &client
 }
