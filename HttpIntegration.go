@@ -16,6 +16,7 @@ type HttpIntegration interface {
 	AddParams(key string, value string) HttpIntegration
 	Interceptor(interceptor http.RoundTripper) HttpIntegration
 	Body(body []byte) HttpIntegration
+	BodyJson(body any) HttpIntegration
 	Timeout(timeout time.Duration) HttpIntegration
 	TimeoutDuration(timeoutDuration time.Duration) HttpIntegration
 	AddQuery(key string, value string) HttpIntegration
