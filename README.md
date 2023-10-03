@@ -42,8 +42,7 @@ fmt.Printf("data: %v", string(body))
 
 ```go
 
-response := httpClient.Get().
-	Url("https://viacep.com.br/ws/${cep}/json/").
+response := httpClient.Get("https://viacep.com.br/ws/${cep}/json/").
 	AddParams("cep", "01001000").
 	Exec()
 
@@ -71,7 +70,8 @@ type ResponseBody struct {
 }
 
 response := httpClient.
-	Get("https://dummyjson.com/products/30").
+	Get("https://dummyjson.com/products/${product_id}").
+    AddParams("product_id", "30").
 	Authorization(restclient.NewBasic("your username", "your password")).
 	Exec()
 
@@ -84,8 +84,7 @@ fmt.Println(responseBody)
 #### Using basic authentication in your request
 
 ```go
-response := httpClient.Get().
-	Url("https://your-rest-api-integration-herer").
+response := httpClient.Get("https://your-rest-api-integration-herer").
 	Authorization(restclient.NewBasic("your username", "your password")).
 	Exec()
 ```
@@ -109,8 +108,7 @@ httpSignatureAuthorization := restclient.NewHTTPSignatureBuilder().
 	VCMerchantID("Your_Merchant_ID").
 	Build()
 
-response := httpClient.Post().
-	Url(url).
+response := httpClient.Post(url).
 	ContentType(restclient.ApplicationJson).
 	AddHeader("Digest", authorization.Digest).
 	AddHeader("V-C-Merchant-Id", "Your_Merchant_ID").
@@ -126,8 +124,7 @@ response := httpClient.Post().
 #### Using other configurations in your request
 
 ```go
-response := httpClient.Get().
-	Url("https://your-rest-api-integration-herer").
+response := httpClient.Get("https://your-rest-api-integration-herer").
 	ContentType(restclient.ApplicationJson).
 	Accept(restclient.ApplicationJson).
 	AddHeader("your_key", "your_value").
@@ -143,8 +140,7 @@ First, you need to implement the `http.RoundTripper` interface from the `net/htt
 and then pass your implementation as shown below:
 
 ```go
-response := httpClient.Get().
-	Url("https://your-rest-api-integration-herer").
+response := httpClient.Get("https://your-rest-api-integration-herer").
 	Interceptor(your_Interceptor_Implemented_Here).
 	Exec()
 ```
@@ -153,8 +149,7 @@ response := httpClient.Get().
 
  - With 10 seconds of timeout
 ```go
-response := httpClient.
-	Get("https://your-rest-api-integration-herer").
+response := httpClient.Get("https://your-rest-api-integration-herer").
 	Authorization(restclient.NewBasic("your username", "your password")).
 	Timeout(10).
 	Exec()
@@ -171,8 +166,7 @@ response := httpClient.
 
  - With 5 minutes of timeout
 ```go
-response := httpClient.
-	Get("https://your-rest-api-integration-herer").
+response := httpClient.Get("https://your-rest-api-integration-herer").
 	Authorization(restclient.NewBasic("your username", "your password")).
 	Timeout(5).
 	TimeoutDuration(time.Minute).
