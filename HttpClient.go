@@ -2,6 +2,7 @@ package restclient
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -15,6 +16,7 @@ type HttpClient struct {
 	params          map[string]string
 	queries         map[string]string
 	body            []byte
+	bodyJson        any
 	timeout         time.Duration
 	timeoutDuration time.Duration
 	authorization   Authorization
@@ -61,6 +63,11 @@ func (h *HttpClient) Timeout(timeout time.Duration) HttpIntegration {
 	return h
 }
 
+func (h *HttpClient) BodyJson(body any) HttpIntegration {
+	h.bodyJson = body
+	return h
+}
+
 func (h *HttpClient) TimeoutDuration(timeoutDuration time.Duration) HttpIntegration {
 	h.timeoutDuration = timeoutDuration
 	return h
@@ -75,6 +82,12 @@ func (h *HttpClient) Exec() HttpClientResponse {
 	h.addParams()
 
 	url := h.url + h.getRawQuery()
+
+	err := h.makeBodyJson()
+
+	if err != nil {
+		return NewHttpRestClientResponse(nil, err)
+	}
 
 	req, err := http.NewRequest(string(h.httpMethod), url, bytes.NewBuffer(h.body))
 	if err != nil {
@@ -106,6 +119,17 @@ func (h *HttpClient) getTimeout() time.Duration {
 		return 10 * h.timeoutDuration
 	}
 	return 10 * time.Second
+}
+
+func (h *HttpClient) makeBodyJson() error {
+	if h.bodyJson != nil {
+		b, err := json.Marshal(h.bodyJson)
+		if err != nil {
+			return err
+		}
+		h.body = b
+	}
+	return nil
 }
 
 func (h *HttpClient) addParams() {

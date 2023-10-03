@@ -16,5 +16,6 @@ type HttpIntegration interface {
 	AddQuery(key string, value string) HttpIntegration
 	Interceptor(interceptor http.RoundTripper) HttpIntegration
 	Body(body []byte) HttpIntegration
+	BodyJson(body any) HttpIntegration
 	Exec() HttpClientResponse
 }

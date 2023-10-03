@@ -88,3 +88,31 @@ func Test_WhenExecuteGet_ThenReturnResponseObject(t *testing.T) {
 	}
 
 }
+
+func Test_WhenExecutePostWithBodyJson_ThenReturnSuccess(t *testing.T) {
+	httpClient := NewRestClient()
+	httpResponse := httpClient.
+		Post("https://dummyjson.com/products/add").
+		BodyJson(struct {
+			Title string `json:"title"`
+		}{Title: "BMX X3"}).
+		ContentType(ApplicationJson).
+		Accept(ApplicationJson).
+		Exec()
+
+	if httpResponse.GetError() != nil {
+		t.Fatalf(`Expected value to be nil: %v`, httpResponse.GetError())
+	}
+
+	responseBody := ResponseBody{}
+	err := httpResponse.Unmarshal(&responseBody)
+
+	if err != nil {
+		t.Fatalf(`Expected value to be nil: %v`, err)
+	}
+
+	if responseBody.Id <= 0 || responseBody.Title == "" {
+		t.Fatalf(`Expected value to be nil: %v`, err)
+	}
+
+}
