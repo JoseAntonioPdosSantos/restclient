@@ -21,8 +21,7 @@ type ResponseBody struct {
 func Test_WhenExecuteGetRequestWithUserUnauthorized_ThenReturnStatus401(t *testing.T) {
 	authorization := NewBasic("your_username", "")
 	httpClient := NewRestClient()
-	httpResponse := httpClient.Delete().
-		Url("https://api.pagar.me/core/v5/customers/customer_id/cards/card_id").
+	httpResponse := httpClient.Delete("https://api.pagar.me/core/v5/customers/customer_id/cards/card_id").
 		ContentType(ApplicationJson).
 		Accept(ApplicationJson).
 		Authorization(authorization).

@@ -1,5 +1,7 @@
 package restclient
 
+import "fmt"
+
 type Bearer struct {
 	token  string
 	prefix string
@@ -12,7 +14,7 @@ func NewBearer(token string) Authorization {
 	}
 }
 func (b Bearer) GetAuthorization() string {
-	return "Bearer " + b.token
+	return fmt.Sprintf("%s %s", b.prefix, b.token)
 }
 
 func (b Bearer) GetHeaderKey() string {

@@ -3,6 +3,7 @@ package restclient
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -20,16 +21,6 @@ type HttpClient struct {
 	timeoutDuration time.Duration
 	authorization   Authorization
 	interceptor     http.RoundTripper
-}
-
-func (h *HttpClient) Url(url string) HttpIntegration {
-	h.url = url
-	return h
-}
-
-func (h *HttpClient) Host(host string) HttpIntegration {
-	h.url = host
-	return h
 }
 
 func (h *HttpClient) Authorization(authorization Authorization) HttpIntegration {
@@ -67,13 +58,13 @@ func (h *HttpClient) Body(body []byte) HttpIntegration {
 	return h
 }
 
-func (h *HttpClient) BodyJson(body any) HttpIntegration {
-	h.bodyJson = body
+func (h *HttpClient) Timeout(timeout time.Duration) HttpIntegration {
+	h.timeout = timeout
 	return h
 }
 
-func (h *HttpClient) Timeout(timeout time.Duration) HttpIntegration {
-	h.timeout = timeout
+func (h *HttpClient) BodyJson(body any) HttpIntegration {
+	h.bodyJson = body
 	return h
 }
 
@@ -117,17 +108,6 @@ func (h *HttpClient) Exec() HttpClientResponse {
 	return NewHttpRestClientResponse(res, err)
 }
 
-func (h *HttpClient) makeBodyJson() error {
-	if h.bodyJson != nil {
-		b, err := json.Marshal(h.bodyJson)
-		if err != nil {
-			return err
-		}
-		h.body = b
-	}
-	return nil
-}
-
 func (h *HttpClient) getTimeout() time.Duration {
 	if h.timeout > 0 {
 		if h.timeoutDuration > 0 {
@@ -141,9 +121,20 @@ func (h *HttpClient) getTimeout() time.Duration {
 	return 10 * time.Second
 }
 
+func (h *HttpClient) makeBodyJson() error {
+	if h.bodyJson != nil {
+		b, err := json.Marshal(h.bodyJson)
+		if err != nil {
+			return err
+		}
+		h.body = b
+	}
+	return nil
+}
+
 func (h *HttpClient) addParams() {
 	for k, v := range h.params {
-		h.url = strings.Replace(h.url, "${"+k+"}", v, 3)
+		h.url = strings.Replace(h.url, fmt.Sprintf("${%s}", k), v, 3)
 	}
 }
 
@@ -160,7 +151,7 @@ func (h *HttpClient) addHeaders(request *http.Request) {
 func (h *HttpClient) getRawQuery() string {
 	queries := "?"
 	for k, v := range h.queries {
-		queries += k + "=" + v + "&"
+		queries += fmt.Sprintf("%s=%s&", k, v)
 	}
 	return queries[:len(queries)-1]
 }
