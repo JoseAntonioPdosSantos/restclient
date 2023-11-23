@@ -55,30 +55,22 @@ fmt.Printf("data: %v", string(body))
 #### Using unmarshal of client in your request
 
 ```go
-type ResponseBody struct {
-	Id                 int      `json:"id"`
-	Title              string   `json:"title"`
-	Description        string   `json:"description"`
-	Price              int      `json:"price"`
-	DiscountPercentage float64  `json:"discountPercentage"`
-	Rating             float64  `json:"rating"`
-	Stock              int      `json:"stock"`
-	Brand              string   `json:"brand"`
-	Category           string   `json:"category"`
-	Thumbnail          string   `json:"thumbnail"`
-	Images             []string `json:"images"`
+type YourStruct struct {
+	ID                 int          `json:"id"`
+	Title              string       `json:"title"`
+	Description        string       `json:"description"`
+	Object             OtherStruct  `json:"object"`
 }
 
-response := httpClient.
-	Get("https://dummyjson.com/products/${product_id}").
-    AddParams("product_id", "30").
+response := httpClient.Get("https://dummyjson.com/products/${product_id}").
+        AddParams("product_id", "30").
 	Authorization(restclient.NewBasic("your username", "your password")).
 	Exec()
 
-responseBody := &ResponseBody{}
-err := response.Unmarshal(&responseBody)	
+yourStruct := &YourStruct{}
+err := response.Unmarshal(&yourStruct)	
 
-fmt.Println(responseBody)
+fmt.Println(yourStruct)
 ```
 
 #### Using basic authentication in your request
