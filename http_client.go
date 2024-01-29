@@ -49,10 +49,6 @@ func (h *HttpClient) AddParams(key string, value string) HttpIntegration {
 }
 
 func (h *HttpClient) AddQuery(key string, value string) HttpIntegration {
-	h.queries[key] = value
-	return h
-}
-func (h *HttpClient) AddQueryIfNoEmpty(key string, value string) HttpIntegration {
 	if len(value) > 0 {
 		h.queries[key] = value
 	}
