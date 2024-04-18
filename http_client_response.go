@@ -3,8 +3,8 @@ package restclient
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -26,9 +26,11 @@ func NewHttpRestClientResponse(response *http.Response, err error) HttpClientRes
 
 func (h *HttpRestClientResponse) GetBody() (body []byte, err error) {
 	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Printf("an error occurred while trying to close the body, got: %s", err)
+		if Body != nil {
+			err := Body.Close()
+			if err != nil {
+				log.Printf("an error occurred while trying to close the body, got: %s", err)
+			}
 		}
 	}(h.response.Body)
 	if h.response == nil {
