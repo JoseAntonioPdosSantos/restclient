@@ -34,6 +34,9 @@ func (h *HttpRestClientResponse) GetBody() (body []byte, err error) {
 	if h.response == nil {
 		return nil, errors.New("response can not be nil")
 	}
+	if h.response.Body == nil {
+		return nil, errors.New("body is nil")
+	}
 	body, err = io.ReadAll(h.response.Body)
 	if err != nil {
 		return nil, err
