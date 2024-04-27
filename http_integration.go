@@ -1,6 +1,7 @@
 package restclient
 
 import (
+	"context"
 	"net/http"
 	"time"
 )
@@ -17,5 +18,6 @@ type HttpIntegration interface {
 	Interceptor(interceptor http.RoundTripper) HttpIntegration
 	Body(body []byte) HttpIntegration
 	BodyJson(body any) HttpIntegration
+	WithContext(ctx context.Context) HttpIntegration
 	Exec() HttpClientResponse
 }
