@@ -2,6 +2,7 @@ package restclient
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -21,6 +22,7 @@ type HttpClient struct {
 	timeoutDuration time.Duration
 	authorization   Authorization
 	interceptor     http.RoundTripper
+	ctx             context.Context
 }
 
 func (h *HttpClient) Authorization(authorization Authorization) HttpIntegration {
@@ -80,6 +82,11 @@ func (h *HttpClient) Interceptor(interceptor http.RoundTripper) HttpIntegration 
 	return h
 }
 
+func (h *HttpClient) WithContext(ctx context.Context) HttpIntegration {
+	h.ctx = ctx
+	return h
+}
+
 func (h *HttpClient) Exec() HttpClientResponse {
 	h.addParams()
 
@@ -91,7 +98,11 @@ func (h *HttpClient) Exec() HttpClientResponse {
 		return NewHttpRestClientResponse(nil, err)
 	}
 
-	req, err := http.NewRequest(string(h.httpMethod), url, bytes.NewBuffer(h.body))
+	if h.ctx == nil {
+		h.ctx = context.Background()
+	}
+
+	req, err := http.NewRequestWithContext(h.ctx, string(h.httpMethod), url, bytes.NewBuffer(h.body))
 	if err != nil {
 		return NewHttpRestClientResponse(nil, err)
 	}
